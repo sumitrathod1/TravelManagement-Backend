@@ -124,6 +124,7 @@ namespace TravelManagement.Repository
             return employeeAvailability; // Return availability for all employees
         }
         
+         
         public async Task<List<Booking>> FilterUsersBookingsAsync(IQueryable<Booking> query, UserFilterDTO filterDTO)
         {
             query = query.Where(b => b.Userid == filterDTO.userId);

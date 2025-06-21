@@ -85,7 +85,7 @@ namespace TravelManagement.Repository
         {
             return await _appDbCotext.Bookings
                 .Include(b => b.user)
-                .Include(c => c.Customer)
+                .Include(c => c.Customer).OrderByDescending(b=>b.travelDate)
                 .Include(v => v.Vehicle).Take(100).ToListAsync();
         }
         public Booking CancelBooking(int BookingId)
@@ -120,10 +120,10 @@ namespace TravelManagement.Repository
 
             // 3. Prepare TravelAgent (if provided)
             TravelAgent? agent = null;
-            if (newBookiingDTO.TravelAgentId.HasValue)
+            if (newBookiingDTO.TravelAgentName != null)
             {
                 agent = await _appDbCotext.TravelAgents
-                    .FirstOrDefaultAsync(x => x.AgentId == newBookiingDTO.TravelAgentId.Value);
+                    .FirstOrDefaultAsync(x => x.Name == newBookiingDTO.TravelAgentName);
             }
 
             // 4. Customer and Employee Lookup
