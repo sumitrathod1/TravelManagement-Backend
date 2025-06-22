@@ -1,10 +1,11 @@
 ﻿using TravelManagement.Models;
+using TravelManagement.Models.DTO;
 
 namespace TravelManagement.Repository
 {
     public interface ITravelAgentsRepository
     {
         Task <List<TravelAgent>> GetAllAgentsAsync();
-        Task <TravelAgent> addAgent(TravelAgent travelAgent);
+        Task <TravelAgent> addAgent(addAgentDTO addAgentDTO);
     }
 }

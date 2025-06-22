@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelManagement.AppDBContext;
 using TravelManagement.Models;
+using TravelManagement.Models.DTO;
 using TravelManagement.Repository;
 
 namespace TravelManagement.Controllers
@@ -18,13 +19,13 @@ namespace TravelManagement.Controllers
         }
 
         [HttpPost("AddAgent")]
-        public async Task <IActionResult> AddAgent([FromBody] TravelAgent travelAgent)
+        public async Task <IActionResult> AddAgent([FromBody] addAgentDTO addAgentDTO)
         {
-            if (travelAgent == null)
+            if (addAgentDTO == null)
             {
-                throw new ArgumentNullException(nameof(travelAgent), "Travel agent cannot be null.");
+                throw new ArgumentNullException(nameof(addAgentDTO), "Travel agent cannot be null.");
             }
-            var agent = await _travelAgentsRepository.addAgent(travelAgent);
+            var agent = await _travelAgentsRepository.addAgent(addAgentDTO);
             
             return Ok(new { Message = "Travel Agent successfully added", Agent = agent });
         }
