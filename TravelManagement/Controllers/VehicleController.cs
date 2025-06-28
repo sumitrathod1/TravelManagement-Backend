@@ -22,8 +22,8 @@ namespace TravelManagement.Controllers
 
         #region Vehicle
 
-        //[HttpGet("GetAllVehicles")]
-        [HttpGet("[Action]")]
+        [HttpGet("GetAllVehicles")]
+        
 
         public async Task<IActionResult> GetallVehicles() 
         {
@@ -31,8 +31,7 @@ namespace TravelManagement.Controllers
             return Ok(vehicles);
         }
 
-        //[HttpGet("GetVehicle")]
-        [HttpGet("[Action]")]
+        [HttpGet("GetVehicle")]
         public async Task<ActionResult<Vehicle>> GetVehicle(int id)
         {
             var vehicle = await _appDbContext.Vehicles.FindAsync(id);
@@ -59,8 +58,8 @@ namespace TravelManagement.Controllers
             var objVehicle = await _vehicleRepository.AddVehcle(vehicle);
             return Ok(objVehicle);
         }
-        //[HttpPut("UpdateVehicle")]
-        [HttpPut("[Action]")]
+        [HttpPut("UpdateVehicle")]
+        
         public async Task<IActionResult> UpdateVechicle([FromBody] Vehicle vehicle)
         {
             if (vehicle == null)
@@ -79,8 +78,7 @@ namespace TravelManagement.Controllers
             }
         }
 
-       // [HttpGet("vehicle-availability")]
-        [HttpGet("[Action]")]
+        [HttpGet("vehicle-availability")]
         public async Task<IActionResult> GetVehicleAvailability(int? vehicleId = null)
         {
             if(vehicleId != null)

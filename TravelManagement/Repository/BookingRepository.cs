@@ -26,7 +26,12 @@ namespace TravelManagement.Repository
                     b.BookingId,
                     b.travelDate,
                     b.Traveltime,
+                    b.BookingType,
+                    b.From,
+                    b.To,
                     b.Amount,
+                    b.Status,
+                    b.Pax,
                     Customer = new
                     {
                         b.Customer.CustomerName,
