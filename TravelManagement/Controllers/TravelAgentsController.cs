@@ -34,7 +34,7 @@ namespace TravelManagement.Controllers
 
         public async Task<IActionResult> GetAllAgent()
         {
-            var agents = await _travelAgentsRepository.GetAllAgentsAsync();
+            var agents = await _travelAgentsRepository.GetAllAgentsDashboardAsync();
 
             if (agents == null || agents.Count == 0)
             {

@@ -52,6 +52,7 @@ namespace TravelManagement.Controllers
         [HttpPost("New-Booking")]
         public async Task<IActionResult> newBooking([FromBody] NewBookiingDTO bookiingDTO)
         {
+            Console.WriteLine($"BookingDate received: {bookiingDTO.BookingDate}");
             if (bookiingDTO == null)
             {
                 return BadRequest("Please fill the form correctly");

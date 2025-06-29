@@ -7,5 +7,7 @@ namespace TravelManagement.Repository
     {
         Task <List<TravelAgent>> GetAllAgentsAsync();
         Task <TravelAgent> addAgent(addAgentDTO addAgentDTO);
+
+        Task<List<AgentDashboardDTO>> GetAllAgentsDashboardAsync();
     }
 }

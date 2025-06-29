@@ -113,7 +113,7 @@ namespace TravelManagement.Controllers
         [HttpGet("GetAllexpence")]
         public async Task<IActionResult> getAllexpence()
         {
-            return Ok(await _appDbContext.vehicleExpences.ToListAsync());
+            return Ok(await _appDbContext.vehicleExpences.Include(g=>g.Vehicle).ToListAsync());
         }
 
         [HttpGet("GetExpenceBybId")]

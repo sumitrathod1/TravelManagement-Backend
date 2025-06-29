@@ -45,7 +45,7 @@ namespace TravelManagement.Repository
                     {
                         b.user.EmployeeName
                     }
-                })
+                }).OrderByDescending(b=>b.travelDate)
                 .ToListAsync();
 
             // Revenue Calculations
