@@ -161,7 +161,7 @@ namespace TravelManagement.Repository
             switch (vechicleMaintenanceDTO.maintenanceType)
             {
                 case "oilChange":
-                    mType=MaintenanceType.oilChange; break;
+                    mType = MaintenanceType.oilChange; break;
                 case "TireChange":
                     mType = MaintenanceType.TireChange; break;
             }
@@ -178,6 +178,15 @@ namespace TravelManagement.Repository
             await _appDbCotext.SaveChangesAsync();
 
             return newVhM;
+        }
+
+        public async Task<List<VehicleMaintenanceShedule>> GetMaintenanceShedule()
+        {
+            var maintenace = await _appDbCotext.vehicleMaintenanceShedules
+            .Include(b => b.Vehicle)
+            .ToListAsync();
+
+            return maintenace;
         }
     }
 }

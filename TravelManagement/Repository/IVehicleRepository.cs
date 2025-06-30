@@ -14,6 +14,8 @@ namespace TravelManagement.Repository
 
         Task<VehicleExpence> getByidExpence(string vehicleNumber);
 
+        Task<List<VehicleMaintenanceShedule>> GetMaintenanceShedule();
+
         Task<VehicleMaintenanceShedule> AddNewVechicleMaintenance(VechicleMaintenanceDTO vechicleMaintenanceDTO);
     }
 }

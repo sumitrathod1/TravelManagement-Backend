@@ -186,7 +186,7 @@ namespace TravelManagement.Controllers
         }
         #endregion
 
-
+            
         [HttpPost("AddVechicleMaintenance")]
         public async Task<IActionResult> AddVechicleMaintenance(VechicleMaintenanceDTO vechicleMaintenanceDTO)
         {
@@ -195,6 +195,16 @@ namespace TravelManagement.Controllers
                 return NotFound("Vehicle not found or invalid data");
 
             return Ok(addnewMaintainance);
+        }
+
+        [HttpGet("GetVehicleMaintenance")]
+        public async Task<IActionResult> GetVehicleMaintenance()
+        {
+            var getMaintenance = await _vehicleRepository.GetMaintenanceShedule();
+            if (getMaintenance == null)
+                return BadRequest("ther is no maintenance");
+
+            return Ok(getMaintenance);
         }
     }
 }
