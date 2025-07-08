@@ -9,6 +9,7 @@ namespace TravelManagement.Repository
         Task<Booking> CreateBooking(NewBookiingDTO newBookingDTO);
         Task<List<Booking>> GetAllBookingsAsync();
         public Task<object> GetAllBookingsWithStatsAsync();
+
         Task<List<Booking>> FilterBookingsAsync(IQueryable<Booking> query,
             BookingFilterDTO filterDTO
         );

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TravelManagement.AppDBContext;
 using TravelManagement.Models;
 using TravelManagement.Models.DTO;
@@ -27,8 +28,9 @@ namespace TravelManagement.Repository
             var agents = await _context.TravelAgents.ToListAsync();
 
             var allocations = await _context.BookingPaymentAllocations
-                .Where(a => a.PayerType == PayerType.Agent)
+                .Where(a => a.PayerType == PayerType.Agent || a.PayerType == PayerType.Owner)
                 .ToListAsync();
+
 
             var result = agents.Select(agent =>
             {
@@ -39,6 +41,9 @@ namespace TravelManagement.Repository
                 decimal totalAllocated = agentAllocations.Sum(a => a.AllocatedAmount);
                 decimal totalPaid = agentAllocations.Sum(a => a.PaidAmount);
 
+                Console.WriteLine($"Agent {agent.Name} | Allocated: {totalAllocated} | Paid: {totalPaid} | Pending: {totalAllocated - totalPaid}");
+
+
                 return new AgentDashboardDTO
                 {
                     AgentId = agent.AgentId,
@@ -46,7 +51,7 @@ namespace TravelManagement.Repository
                     type=agent.type,
                     BookingCount = bookingCount,
                     Earned = totalPaid,
-                    Pending = totalAllocated - totalPaid,
+                    Pending = Math.Max(0, totalAllocated - totalPaid),
                 };
             }).ToList();
 
@@ -71,6 +76,64 @@ namespace TravelManagement.Repository
             await _context.TravelAgents.AddAsync(newAgent);
             await _context.SaveChangesAsync();
             return newAgent;
+        }
+
+        public async Task<decimal> ApplyAgentPayment(AddAgentPaymentDto dto)
+        {
+
+            var unpaidBookings = await _context.Bookings
+            .Where(b => b.TravelAgentId == dto.AgentId)
+            .Select(b => new { b.BookingId, b.travelDate })
+            .OrderBy(b => b.travelDate)
+            .ToListAsync();
+
+
+            decimal remaining = dto.TotalPaidAmount;
+
+            decimal applied = 0;
+
+            foreach (var booking in unpaidBookings)
+            {
+                decimal alreadyPaid = await _context.Payments
+                    .Where(p => p.BookingId == booking.BookingId && p.TravelAgentId == dto.AgentId)
+                    .SumAsync(p => p.AmountPaid);
+
+                decimal allocated = await _context.BookingPaymentAllocations
+                    .Where(a => a.BookingId == booking.BookingId && a.TravelAgentId == dto.AgentId)
+                    .SumAsync(a => a.AllocatedAmount);
+
+                decimal pending = allocated - alreadyPaid;
+
+                if (pending <= 0 || remaining <= 0)
+                    continue;
+
+                decimal toApply = Math.Min(remaining, pending);
+
+                var payment = new Payments
+                {
+                    AmountPaid = toApply,
+                    PaymentDate = DateTime.Now,
+                    PaymentMethod = "Cash",
+                    BookingId = booking.BookingId,
+                    TravelAgentId = dto.AgentId
+                };
+
+                _context.Payments.Add(payment);
+                var allocationRecord = await _context.BookingPaymentAllocations
+                .FirstOrDefaultAsync(a => a.BookingId == booking.BookingId &&
+                              a.TravelAgentId == dto.AgentId);
+
+                if (allocationRecord != null)
+                {
+                    allocationRecord.PaidAmount += toApply;
+                }
+                remaining -= toApply;
+                applied+= toApply;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return applied;
         }
     }
 }

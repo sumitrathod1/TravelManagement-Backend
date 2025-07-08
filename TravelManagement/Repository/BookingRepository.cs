@@ -45,32 +45,96 @@ namespace TravelManagement.Repository
                     {
                         b.user.EmployeeName
                     }
-                }).OrderByDescending(b=>b.travelDate)
+                }).OrderByDescending(b => b.travelDate)
                 .ToListAsync();
 
-            // Revenue Calculations
             var today = DateOnly.FromDateTime(DateTime.Today);
             var currentMonth = today.Month;
             var currentYear = today.Year;
-            var sevenDaysAgo = today.AddDays(-6);
 
-            var totalToday = bookings
-                .Where(b => b.travelDate == today)
-                .Sum(b => b.Amount);
+            // Calculate start of the current week (assuming week starts on Monday)
+            var dayOfWeek = (int)DateTime.Today.DayOfWeek;
+            var daysSinceMonday = (dayOfWeek == 0) ? 6 : dayOfWeek - 1; // Sunday=0, Monday=1
+            var weekStart = today.AddDays(-daysSinceMonday);
 
-            var totalWeek = bookings
-                .Where(b => b.travelDate >= sevenDaysAgo && b.travelDate <= today)
-                .Sum(b => b.Amount);
+            var totalToday = bookings.Where(b => b.travelDate == today).Sum(b => b.Amount);
 
-            var totalMonth = bookings
-                .Where(b => b.travelDate.Month == currentMonth && b.travelDate.Year == currentYear)
-                .Sum(b => b.Amount);
+            var totalWeek = bookings.Where(b => b.travelDate >= weekStart && b.travelDate <= today).Sum(b => b.Amount);
 
-            var totalYear = bookings
-                .Where(b => b.travelDate.Year == currentYear)
-                .Sum(b => b.Amount);
+            var totalMonth = bookings.Where(b => b.travelDate.Month == currentMonth && b.travelDate.Year == currentYear).Sum(b => b.Amount);
 
+            var totalYear = bookings.Where(b => b.travelDate.Year == currentYear).Sum(b => b.Amount);
+
+            // Total revenue (all time)
             var totalRevenue = bookings.Sum(b => b.Amount);
+
+            // --- Fixed period ranges for averages ---
+            // Last 30 days (including today)
+            var last30Days = Enumerable.Range(0, 30)
+                .Select(i => today.AddDays(-i))
+                .ToList();
+
+            // Last 12 months
+            var last12Months = Enumerable.Range(0, 12)
+                .Select(i => today.AddMonths(-i))
+                .Select(d => new { d.Year, d.Month })
+                .Distinct()
+                .ToList();
+
+            // Last 5 years
+            var last5Years = Enumerable.Range(0, 5)
+                .Select(i => today.Year - i)
+                .ToList();
+
+            // Last 52 weeks
+            var last52Weeks = Enumerable.Range(0, 52)
+                .Select(i =>
+                {
+                    var date = today.AddDays(-7 * i);
+                    int year = System.Globalization.ISOWeek.GetYear(date.ToDateTime(TimeOnly.MinValue));
+                    int week = System.Globalization.ISOWeek.GetWeekOfYear(date.ToDateTime(TimeOnly.MinValue));
+                    return $"{year}-{week}";
+                })
+                .Distinct()
+                .ToList();
+
+            // --- Averages over fixed periods ---
+            // Daily average (last 30 days)
+            var totalLast30Days = bookings
+                .Where(b => last30Days.Contains(b.travelDate))
+                .Sum(b => b.Amount);
+            var avgDaily = Math.Round(totalLast30Days / (last30Days.Count > 0 ? last30Days.Count : 1), 2);
+
+            // Weekly average (last 52 weeks)
+            var bookingWeeks = bookings.Select(b =>
+            {
+                var date = b.travelDate.ToDateTime(TimeOnly.MinValue);
+                int year = System.Globalization.ISOWeek.GetYear(date);
+                int week = System.Globalization.ISOWeek.GetWeekOfYear(date);
+                return $"{year}-{week}";
+            }).ToList();
+            var totalLast52Weeks = bookings
+                .Where(b =>
+                {
+                    var date = b.travelDate.ToDateTime(TimeOnly.MinValue);
+                    int year = System.Globalization.ISOWeek.GetYear(date);
+                    int week = System.Globalization.ISOWeek.GetWeekOfYear(date);
+                    return last52Weeks.Contains($"{year}-{week}");
+                })
+                .Sum(b => b.Amount);
+            var avgWeekly = Math.Round(totalLast52Weeks / (last52Weeks.Count > 0 ? last52Weeks.Count : 1), 2);
+
+            // Monthly average (last 12 months)
+            var totalLast12Months = bookings
+                .Where(b => last12Months.Any(m => m.Year == b.travelDate.Year && m.Month == b.travelDate.Month))
+                .Sum(b => b.Amount);
+            var avgMonthly = Math.Round(totalLast12Months / (last12Months.Count > 0 ? last12Months.Count : 1), 2);
+
+            // Yearly average (last 5 years)
+            var totalLast5Years = bookings
+                .Where(b => last5Years.Contains(b.travelDate.Year))
+                .Sum(b => b.Amount);
+            var avgYearly = Math.Round(totalLast5Years / (last5Years.Count > 0 ? last5Years.Count : 1), 2);
 
             return new
             {
@@ -82,6 +146,13 @@ namespace TravelManagement.Repository
                     month = totalMonth,
                     year = totalYear,
                     total = totalRevenue
+                },
+                averageStats = new
+                {
+                    dailyAvg = avgDaily,
+                    weeklyAvg = avgWeekly,
+                    monthlyAvg = avgMonthly,
+                    yearlyAvg = avgYearly
                 }
             };
         }
@@ -133,7 +204,6 @@ namespace TravelManagement.Repository
             }
 
             // 4. Customer and Employee Lookup
-           
 
             if (existingBooking == null)
             {

@@ -31,7 +31,6 @@ namespace TravelManagement.Controllers
         }
 
         [HttpGet("GetAllAgent")]
-
         public async Task<IActionResult> GetAllAgent()
         {
             var agents = await _travelAgentsRepository.GetAllAgentsDashboardAsync();
@@ -41,6 +40,23 @@ namespace TravelManagement.Controllers
                 return NotFound("No travel agents found.");
             }
             return Ok(agents);
+        }
+
+        [HttpPost("ApplyAgentPayment")]
+        public async Task<IActionResult> applyAgentAmount([FromBody] AddAgentPaymentDto dto)
+        {
+            if (dto == null || dto.TotalPaidAmount <=0)
+                return BadRequest("Invalid request data.");
+
+            decimal applied= await _travelAgentsRepository.ApplyAgentPayment(dto);
+
+            if (applied <= 0)
+                return BadRequest(new { message = "No pending amount to apply for this agent." });
+
+            return Ok(new
+            {
+                message = $"Payment applied successfully (₹{applied})."
+            });
         }
     }
 }
