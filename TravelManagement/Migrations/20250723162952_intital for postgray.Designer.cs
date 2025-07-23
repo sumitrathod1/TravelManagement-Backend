@@ -2,9 +2,9 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TravelManagement.AppDBContext;
 
 #nullable disable
@@ -12,8 +12,8 @@ using TravelManagement.AppDBContext;
 namespace TravelManagement.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250602152437_First")]
-    partial class First
+    [Migration("20250723162952_intital for postgray")]
+    partial class intitalforpostgray
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,57 +21,63 @@ namespace TravelManagement.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("TravelManagement.Models.Booking", b =>
                 {
                     b.Property<int>("BookingId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BookingId"));
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<bool>("Assigned")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<int>("BookingType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("CustomerID")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("ExternalEmployeeId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("From")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Pax")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Payment")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    b.PrimitiveCollection<int[]>("Payments")
+                        .HasColumnType("integer[]");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("To")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TravelAgentId")
+                        .HasColumnType("integer");
 
                     b.Property<TimeOnly?>("Traveltime")
-                        .HasColumnType("time");
+                        .HasColumnType("time without time zone");
 
                     b.Property<int?>("Userid")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("VehicleId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("travelDate")
                         .HasColumnType("date");
@@ -82,6 +88,8 @@ namespace TravelManagement.Migrations
 
                     b.HasIndex("ExternalEmployeeId");
 
+                    b.HasIndex("TravelAgentId");
+
                     b.HasIndex("Userid");
 
                     b.HasIndex("VehicleId");
@@ -89,23 +97,65 @@ namespace TravelManagement.Migrations
                     b.ToTable("Bookings");
                 });
 
+            modelBuilder.Entity("TravelManagement.Models.BookingPaymentAllocation", b =>
+                {
+                    b.Property<int>("PaymentAllocationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentAllocationId"));
+
+                    b.Property<decimal>("AllocatedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CustomersId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PaidAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("PayerType")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("TravelAgentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PaymentAllocationId");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("CustomersId");
+
+                    b.HasIndex("TravelAgentId");
+
+                    b.ToTable("BookingPaymentAllocations");
+                });
+
             modelBuilder.Entity("TravelManagement.Models.Customers", b =>
                 {
                     b.Property<int>("CustomersId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomersId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CustomersId"));
 
                     b.Property<int>("AlternateNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("CustomerNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly>("TravelDate")
                         .HasColumnType("date");
@@ -119,21 +169,21 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("DocumentID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DocumentID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("DocumentID"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("VehicleID")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("DocumentID");
 
@@ -146,15 +196,15 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("externalEmployeeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("externalEmployeeID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("externalEmployeeID"));
 
                     b.Property<string>("externalEmployeeName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("externalEmployeeNumber")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("externalEmployeeID");
 
@@ -165,29 +215,29 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("OvertimeID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OvertimeID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("OvertimeID"));
 
                     b.Property<int>("BookingId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("hours")
                         .HasPrecision(5, 2)
-                        .HasColumnType("decimal(5,2)");
+                        .HasColumnType("numeric(5,2)");
 
                     b.Property<int>("userId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("OvertimeID");
 
@@ -198,38 +248,76 @@ namespace TravelManagement.Migrations
                     b.ToTable("overtimeLogs");
                 });
 
+            modelBuilder.Entity("TravelManagement.Models.Payments", b =>
+                {
+                    b.Property<int>("PaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PaymentId"));
+
+                    b.Property<decimal>("AmountPaid")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TravelAgentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PaymentId");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("TravelAgentId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("TravelManagement.Models.Salary", b =>
                 {
                     b.Property<int>("SalaryId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SalaryId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SalaryId"));
 
                     b.Property<decimal>("BaseSalay")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("Deduction")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("Month")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("NetSalaey")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal>("Overtimepay")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("Year")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("userID")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("SalaryId");
 
@@ -238,62 +326,91 @@ namespace TravelManagement.Migrations
                     b.ToTable("salaries");
                 });
 
+            modelBuilder.Entity("TravelManagement.Models.TravelAgent", b =>
+                {
+                    b.Property<int>("AgentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AgentId"));
+
+                    b.Property<decimal?>("CommissionRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ContactNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AgentId");
+
+                    b.ToTable("TravelAgents");
+                });
+
             modelBuilder.Entity("TravelManagement.Models.User", b =>
                 {
                     b.Property<int>("userId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("userId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("userId"));
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("EmployeAge")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly?>("EmployeeDOB")
                         .HasColumnType("date");
 
                     b.Property<string>("EmployeeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int?>("Licence")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Number")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("RenewalMailSentDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ResetPasswordtoken")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("RestPasswordExpiry")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Role")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Salary")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<bool>("Status")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("text");
 
                     b.HasKey("userId");
 
@@ -307,27 +424,27 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VehicleId"));
 
                     b.Property<DateOnly>("RegistrationDate")
                         .HasColumnType("date");
 
                     b.Property<int>("Seatingcapacity")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<double>("VehicleAge")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<string>("VehicleName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("VehicleNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("VehicleType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("VehicleId");
 
@@ -338,22 +455,22 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("VehicleExpenceId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VehicleExpenceId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VehicleExpenceId"));
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<int>("CategoryType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpenseDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VehicleID")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("VehicleExpenceId");
 
@@ -366,28 +483,28 @@ namespace TravelManagement.Migrations
                 {
                     b.Property<int>("VechicleMaintenanceSheduleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VechicleMaintenanceSheduleId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("VechicleMaintenanceSheduleId"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Nextduedate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("ServieDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("VehicleID")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("cost")
                         .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("numeric(10,2)");
 
                     b.Property<int>("maintenanceType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("VechicleMaintenanceSheduleId");
 
@@ -408,6 +525,10 @@ namespace TravelManagement.Migrations
                         .WithMany()
                         .HasForeignKey("ExternalEmployeeId");
 
+                    b.HasOne("TravelManagement.Models.TravelAgent", "TravelAgent")
+                        .WithMany()
+                        .HasForeignKey("TravelAgentId");
+
                     b.HasOne("TravelManagement.Models.User", "user")
                         .WithMany()
                         .HasForeignKey("Userid");
@@ -422,9 +543,34 @@ namespace TravelManagement.Migrations
 
                     b.Navigation("ExternalEmployee");
 
+                    b.Navigation("TravelAgent");
+
                     b.Navigation("Vehicle");
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("TravelManagement.Models.BookingPaymentAllocation", b =>
+                {
+                    b.HasOne("TravelManagement.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TravelManagement.Models.Customers", "Customers")
+                        .WithMany()
+                        .HasForeignKey("CustomersId");
+
+                    b.HasOne("TravelManagement.Models.TravelAgent", "TravelAgent")
+                        .WithMany()
+                        .HasForeignKey("TravelAgentId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Customers");
+
+                    b.Navigation("TravelAgent");
                 });
 
             modelBuilder.Entity("TravelManagement.Models.Documents", b =>
@@ -455,6 +601,29 @@ namespace TravelManagement.Migrations
                     b.Navigation("Booking");
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("TravelManagement.Models.Payments", b =>
+                {
+                    b.HasOne("TravelManagement.Models.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TravelManagement.Models.Customers", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId");
+
+                    b.HasOne("TravelManagement.Models.TravelAgent", "TravelAgent")
+                        .WithMany()
+                        .HasForeignKey("TravelAgentId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("TravelAgent");
                 });
 
             modelBuilder.Entity("TravelManagement.Models.Salary", b =>
