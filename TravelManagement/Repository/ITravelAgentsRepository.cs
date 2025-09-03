@@ -9,5 +9,6 @@ namespace TravelManagement.Repository
         Task <TravelAgent> addAgent(addAgentDTO addAgentDTO);
         Task<List<AgentDashboardDTO>> GetAllAgentsDashboardAsync();
         Task<decimal> ApplyAgentPayment(AddAgentPaymentDto addAgentPaymentDto);
+        Task<List<Booking>> GetAgentBookingsById(int agentId);
     }
 }

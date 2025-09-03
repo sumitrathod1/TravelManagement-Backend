@@ -7,7 +7,7 @@ namespace TravelManagement.Models
         [Key]
         public int externalEmployeeID { get; set; }
         public string? externalEmployeeName { get; set; }
-        public int externalEmployeeNumber { get; set; }
+        public string? externalEmployeeNumber { get; set; }
 
     }
 }

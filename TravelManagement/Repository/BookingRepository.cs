@@ -215,11 +215,10 @@ namespace TravelManagement.Repository
                 var customer = await _appDbCotext.Customers
                .FirstOrDefaultAsync(x => x.CustomerNumber == newBookiingDTO.CustomerNumber);
 
-                var externalEmp = newBookiingDTO.ExternalEmployeeNumber.HasValue
-                    ? await _appDbCotext.ExternalEmployees
-                        .FirstOrDefaultAsync(x => x.externalEmployeeNumber == newBookiingDTO.ExternalEmployeeNumber.Value)
-                    : null;
+                var externalEmp = await _appDbCotext.ExternalEmployees
+                .FirstOrDefaultAsync(x => x.externalEmployeeNumber == newBookiingDTO.ExternalEmployeeNumber);
                 // 5. Create new booking
+
                 var newBooking = new Booking
                 {
                     From = newBookiingDTO.From,
@@ -237,9 +236,15 @@ namespace TravelManagement.Repository
                     Payment = paymentSource,
                     TravelAgentId = agent?.AgentId
                 };
+                try
+                {
+                    await _appDbCotext.Bookings.AddAsync(newBooking);
+                    await _appDbCotext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
 
-                await _appDbCotext.Bookings.AddAsync(newBooking);
-                await _appDbCotext.SaveChangesAsync();
+                }
 
                 // 6. Add Payment Allocation
                 var allocations = new List<BookingPaymentAllocation>();
@@ -283,12 +288,10 @@ namespace TravelManagement.Repository
                 {
                     await UpdateExternalEmployee(newBookiingDTO);
                 }
-
-                var externalEmp = newBookiingDTO.ExternalEmployeeNumber.HasValue
-                    ? await _appDbCotext.ExternalEmployees
-                        .FirstOrDefaultAsync(x => x.externalEmployeeNumber == newBookiingDTO.ExternalEmployeeNumber.Value)
-                    : null;
-                // 7. Update existing booking
+                try {
+                var externalEmp = await _appDbCotext.ExternalEmployees
+                .FirstOrDefaultAsync(x => x.externalEmployeeNumber == newBookiingDTO.ExternalEmployeeNumber);
+                    // 7. Update existing booking
                 existingBooking.From = newBookiingDTO.From;
                 existingBooking.To = newBookiingDTO.To;
                 existingBooking.VehicleId = newBookiingDTO.VehicleId;
@@ -304,7 +307,11 @@ namespace TravelManagement.Repository
                 existingBooking.TravelAgentId = agent?.AgentId;
 
                 _appDbCotext.Bookings.Update(existingBooking);
-                await _appDbCotext.SaveChangesAsync();
+                await _appDbCotext.SaveChangesAsync(); }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
 
                 // Optional: Update allocations if needed (your choice based on business logic)
                 return existingBooking;
@@ -313,7 +320,7 @@ namespace TravelManagement.Repository
         public async Task UpdateExternalEmployee(NewBookiingDTO newBookiingDTO)
         {
             // Validation: number must be valid (non-null and non-zero)
-            if (newBookiingDTO.ExternalEmployeeNumber == null || newBookiingDTO.ExternalEmployeeNumber == 0)
+            if (newBookiingDTO.ExternalEmployeeNumber == null)
                 return;
 
             // Try to find existing employee by number
@@ -337,7 +344,7 @@ namespace TravelManagement.Repository
                 var newEmployee = new ExternalEmployee
                 {
                     externalEmployeeName = newBookiingDTO.ExternalEmployee,
-                    externalEmployeeNumber = newBookiingDTO.ExternalEmployeeNumber.Value
+                    externalEmployeeNumber = newBookiingDTO.ExternalEmployeeNumber
                 };
 
                 await _appDbCotext.ExternalEmployees.AddAsync(newEmployee);
@@ -351,26 +358,40 @@ namespace TravelManagement.Repository
             var customer = await _appDbCotext.Customers.FirstOrDefaultAsync(x => x.CustomerNumber == newBookiingDTO.CustomerNumber);
             if (customer == null)
             {
-                var newcustomer = new Customers
+                try
                 {
-                    CustomerName = newBookiingDTO.CustomerName,
-                    CustomerNumber = newBookiingDTO.CustomerNumber,
-                    AlternateNumber = (int)newBookiingDTO.AlternateNumber,
-                    TravelDate = newBookiingDTO.BookingDate,
-                };
-                await _appDbCotext.Customers.AddAsync(newcustomer);
-                await _appDbCotext.SaveChangesAsync();
+                    var newcustomer = new Customers
+                    {
+                        CustomerName = newBookiingDTO.CustomerName,
+                        CustomerNumber = newBookiingDTO.CustomerNumber,
+                        AlternateNumber = newBookiingDTO.AlternateNumber,
+                        TravelDate = newBookiingDTO.BookingDate,
+                    };
+                    await _appDbCotext.Customers.AddAsync(newcustomer);
+                    await _appDbCotext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
             else if (customer != null)
             {
-                // Update existing customer details
-                customer.CustomerName = newBookiingDTO.CustomerName;
-                customer.CustomerNumber = newBookiingDTO.CustomerNumber;
-                customer.AlternateNumber = (int)newBookiingDTO.AlternateNumber;
-                customer.TravelDate = newBookiingDTO.BookingDate;
-                // Save changes to update the customer
-                _appDbCotext.Customers.Update(customer);
-                await _appDbCotext.SaveChangesAsync();
+                try
+                {
+                    // Update existing customer details
+                    customer.CustomerName = newBookiingDTO.CustomerName;
+                    customer.CustomerNumber = newBookiingDTO.CustomerNumber;
+                    customer.AlternateNumber = newBookiingDTO.AlternateNumber;
+                    customer.TravelDate = newBookiingDTO.BookingDate;
+                    // Save changes to update the customer
+                    _appDbCotext.Customers.Update(customer);
+                    await _appDbCotext.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
         public async Task<List<Booking>> FilterBookingsAsync(IQueryable<Booking> query, BookingFilterDTO filterDTO)

@@ -30,7 +30,7 @@
             [Required]
             public required string Password { get; set; }
             [Required]
-            public int Number { get; set; }
+            public string? Number { get; set; }
             public decimal Salary { get; set; }
             public string? ResetPasswordtoken { get; set; }
             public DateTime RestPasswordExpiry { get; set; }

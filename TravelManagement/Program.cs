@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;  
 using System.Text;
 using System.Text.Json.Serialization;
 using TravelManagement.AppDBContext;
+using TravelManagement.Models;
 using TravelManagement.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,16 +48,21 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
 builder.Services.AddScoped<ITravelAgentsRepository, TravelAgentsRepository>();
+builder.Services.AddScoped<BookingRepository>();
+builder.Services.AddHostedService<EmailBookingBackgroundService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+
+QuestPDF.Settings.License = LicenseType.Community;
 var app = builder.Build();
 
 

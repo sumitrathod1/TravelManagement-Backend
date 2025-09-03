@@ -92,20 +92,17 @@ namespace TravelManagement.Repository
 
             decimal applied = 0;
 
-            foreach (var booking in unpaidBookings)
+            foreach (var booking in unpaidBookings.OrderBy(b => b.travelDate))
             {
-                decimal alreadyPaid = await _context.Payments
-                    .Where(p => p.BookingId == booking.BookingId && p.TravelAgentId == dto.AgentId)
-                    .SumAsync(p => p.AmountPaid);
+                var allocation = await _context.BookingPaymentAllocations
+                    .FirstOrDefaultAsync(a => a.BookingId == booking.BookingId &&
+                                          a.TravelAgentId == dto.AgentId &&
+                                          a.PayerType == PayerType.Agent);
 
-                decimal allocated = await _context.BookingPaymentAllocations
-                    .Where(a => a.BookingId == booking.BookingId && a.TravelAgentId == dto.AgentId)
-                    .SumAsync(a => a.AllocatedAmount);
+                if (allocation == null) continue;
 
-                decimal pending = allocated - alreadyPaid;
-
-                if (pending <= 0 || remaining <= 0)
-                    continue;
+                decimal pending = allocation.AllocatedAmount - allocation.PaidAmount;
+                if (pending <= 0 || remaining <= 0) continue;
 
                 decimal toApply = Math.Min(remaining, pending);
 
@@ -134,6 +131,17 @@ namespace TravelManagement.Repository
             await _context.SaveChangesAsync();
 
             return applied;
+        }
+
+        public async Task<List<Booking>> GetAgentBookingsById(int agentId)
+        {
+            var bookings = await _context.Bookings
+            .Include(b => b.TravelAgent)
+            .Include(b => b.Vehicle)
+            .Include(b => b.Customer)
+            .Where(b => b.TravelAgentId == agentId).OrderByDescending(b=>b.travelDate)
+            .ToListAsync();
+            return bookings;
         }
     }
 }

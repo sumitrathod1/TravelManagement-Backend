@@ -24,8 +24,10 @@ namespace TravelManagement.Repository
         {
             // Get the bookings for the user
             var bookings = await _appDbCotext.Bookings
-                                               .Where(x => x.Userid == id)
-                                               .ToListAsync();
+                .Where(x => x.Userid == id) 
+                .Include(x => x.Customer)     
+                .Include(x => x.Vehicle)
+                .ToListAsync();
             return bookings;
         }
 

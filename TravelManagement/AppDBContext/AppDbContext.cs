@@ -81,6 +81,10 @@ namespace TravelManagement.AppDBContext
             modelBuilder.Entity<VehicleMaintenanceShedule>()
                 .Property(v => v.cost)
                 .HasPrecision(10, 2);
+            
+            modelBuilder.Entity<TravelAgent>()
+               .Property(t => t.CommissionRate)
+               .HasColumnType("decimal(18,2)");
 
             base.OnModelCreating(modelBuilder);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TravelManagement.AppDBContext;
+using TravelManagement.Helper;
 using TravelManagement.Models;
 using TravelManagement.Models.DTO;
 using TravelManagement.Repository;
@@ -12,21 +13,21 @@ namespace TravelManagement.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ITravelAgentsRepository _travelAgentsRepository;
-        public TravelAgentsController(AppDbContext context,ITravelAgentsRepository travelAgentsRepository)
+        public TravelAgentsController(AppDbContext context, ITravelAgentsRepository travelAgentsRepository)
         {
             _context = context;
             _travelAgentsRepository = travelAgentsRepository;
         }
 
         [HttpPost("AddAgent")]
-        public async Task <IActionResult> AddAgent([FromBody] addAgentDTO addAgentDTO)
+        public async Task<IActionResult> AddAgent([FromBody] addAgentDTO addAgentDTO)
         {
             if (addAgentDTO == null)
             {
                 throw new ArgumentNullException(nameof(addAgentDTO), "Travel agent cannot be null.");
             }
             var agent = await _travelAgentsRepository.addAgent(addAgentDTO);
-            
+
             return Ok(new { Message = "Travel Agent successfully added", Agent = agent });
         }
 
@@ -45,10 +46,10 @@ namespace TravelManagement.Controllers
         [HttpPost("ApplyAgentPayment")]
         public async Task<IActionResult> applyAgentAmount([FromBody] AddAgentPaymentDto dto)
         {
-            if (dto == null || dto.TotalPaidAmount <=0)
+            if (dto == null || dto.TotalPaidAmount <= 0)
                 return BadRequest("Invalid request data.");
 
-            decimal applied= await _travelAgentsRepository.ApplyAgentPayment(dto);
+            decimal applied = await _travelAgentsRepository.ApplyAgentPayment(dto);
 
             if (applied <= 0)
                 return BadRequest(new { message = "No pending amount to apply for this agent." });
@@ -57,6 +58,39 @@ namespace TravelManagement.Controllers
             {
                 message = $"Payment applied successfully (₹{applied})."
             });
+        }
+
+        [HttpGet("{id}")]
+
+        public async Task<IActionResult> AgentBookingByID(int id)
+        {
+            var agent = await _context.TravelAgents.FindAsync(id);
+            if (agent == null)
+            {
+                return NotFound($"Travel agent with ID {id} not found.");
+            }
+            var bookings = await _travelAgentsRepository.GetAgentBookingsById(id);
+            if (bookings == null || bookings.Count == 0)
+            {
+                return NotFound($"No bookings found for travel agent with ID {id}.");
+            }
+
+            return Ok(bookings);
+        }
+
+        [HttpGet("ExportAgentBookingsPdf/{agentId}")]
+        public async Task<IActionResult> ExportAgentBookingsPdf(int agentId)
+        {
+            var bookings = await _travelAgentsRepository.GetAgentBookingsById(agentId);
+
+            if (bookings == null || bookings.Count == 0)
+                return NotFound("No bookings found for this agent");
+
+            var agentName = bookings.First().TravelAgent?.Name ?? "Unknown Agent";
+            var pdfBytes = BookingPdfGenerator.Generate(bookings, agentName);
+
+            string fileName = $"Agent_{agentId}_BookingsReport.pdf";
+            return File(pdfBytes, "application/pdf", fileName);
         }
     }
 }

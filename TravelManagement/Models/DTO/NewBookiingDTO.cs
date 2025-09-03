@@ -4,8 +4,8 @@
     {
         public int? BookingId { get; set; }
         public string? CustomerName { get; set; }
-        public required int CustomerNumber { get; set; }
-        public int? AlternateNumber { get; set; }
+        public required string CustomerNumber { get; set; }
+        public string? AlternateNumber { get; set; }
         public DateOnly BookingDate { get; set; }
         public TimeOnly BookingTime { get; set; }
         public string? From { get; set; } 
@@ -16,7 +16,7 @@
         public string BookingType { get; set; } = "Notspecified";
         public string BookingStatus { get; set; } = "Pending";
         public string? ExternalEmployee { get; set; }
-        public int? ExternalEmployeeNumber { get; set; }
+        public string? ExternalEmployeeNumber { get; set; }
         public double Amount { get; set; }
         public string Payment { get; set; } = "Admin";
         public string? TravelAgentName { get; set; }

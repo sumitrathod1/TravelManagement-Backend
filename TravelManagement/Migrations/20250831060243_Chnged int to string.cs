@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace TravelManagement.Migrations
 {
     /// <inheritdoc />
-    public partial class intitalforpostgray : Migration
+    public partial class Chngedinttostring : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,11 +15,11 @@ namespace TravelManagement.Migrations
                 name: "Customers",
                 columns: table => new
                 {
-                    CustomersId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CustomerName = table.Column<string>(type: "text", nullable: false),
-                    CustomerNumber = table.Column<int>(type: "integer", nullable: false),
-                    AlternateNumber = table.Column<int>(type: "integer", nullable: false),
+                    CustomersId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AlternateNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TravelDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
@@ -32,10 +31,10 @@ namespace TravelManagement.Migrations
                 name: "ExternalEmployees",
                 columns: table => new
                 {
-                    externalEmployeeID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    externalEmployeeName = table.Column<string>(type: "text", nullable: true),
-                    externalEmployeeNumber = table.Column<int>(type: "integer", nullable: false)
+                    externalEmployeeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    externalEmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    externalEmployeeNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -46,13 +45,13 @@ namespace TravelManagement.Migrations
                 name: "TravelAgents",
                 columns: table => new
                 {
-                    AgentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    type = table.Column<int>(type: "integer", nullable: false),
-                    ContactNumber = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    CommissionRate = table.Column<decimal>(type: "numeric", nullable: true)
+                    AgentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    type = table.Column<int>(type: "int", nullable: false),
+                    ContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CommissionRate = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,23 +62,23 @@ namespace TravelManagement.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    userId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    EmployeeName = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: false),
+                    userId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployeeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     EmployeeDOB = table.Column<DateOnly>(type: "date", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true),
-                    Role = table.Column<int>(type: "integer", nullable: false),
-                    Licence = table.Column<int>(type: "integer", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    Number = table.Column<int>(type: "integer", nullable: false),
-                    Salary = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    ResetPasswordtoken = table.Column<string>(type: "text", nullable: true),
-                    RestPasswordExpiry = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    RenewalMailSentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    Status = table.Column<bool>(type: "boolean", nullable: false),
-                    EmployeAge = table.Column<int>(type: "integer", nullable: false)
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Role = table.Column<int>(type: "int", nullable: false),
+                    Licence = table.Column<int>(type: "int", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Salary = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ResetPasswordtoken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RestPasswordExpiry = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RenewalMailSentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: false),
+                    EmployeAge = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,14 +89,14 @@ namespace TravelManagement.Migrations
                 name: "Vehicles",
                 columns: table => new
                 {
-                    VehicleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VehicleName = table.Column<string>(type: "text", nullable: true),
-                    VehicleNumber = table.Column<string>(type: "text", nullable: true),
-                    VehicleType = table.Column<int>(type: "integer", nullable: false),
+                    VehicleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VehicleName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleType = table.Column<int>(type: "int", nullable: false),
                     RegistrationDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    VehicleAge = table.Column<double>(type: "double precision", nullable: false),
-                    Seatingcapacity = table.Column<int>(type: "integer", nullable: false)
+                    VehicleAge = table.Column<double>(type: "float", nullable: false),
+                    Seatingcapacity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,15 +107,15 @@ namespace TravelManagement.Migrations
                 name: "salaries",
                 columns: table => new
                 {
-                    SalaryId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Month = table.Column<int>(type: "integer", nullable: false),
-                    Year = table.Column<int>(type: "integer", nullable: false),
-                    BaseSalay = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    Deduction = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    Overtimepay = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    NetSalaey = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    userID = table.Column<int>(type: "integer", nullable: false)
+                    SalaryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Month = table.Column<int>(type: "int", nullable: false),
+                    Year = table.Column<int>(type: "int", nullable: false),
+                    BaseSalay = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Deduction = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Overtimepay = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    NetSalaey = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    userID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -133,24 +132,24 @@ namespace TravelManagement.Migrations
                 name: "Bookings",
                 columns: table => new
                 {
-                    BookingId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     travelDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    From = table.Column<string>(type: "text", nullable: true),
-                    To = table.Column<string>(type: "text", nullable: true),
-                    VehicleId = table.Column<int>(type: "integer", nullable: false),
-                    Userid = table.Column<int>(type: "integer", nullable: true),
-                    BookingType = table.Column<int>(type: "integer", nullable: false),
-                    Traveltime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    Pax = table.Column<int>(type: "integer", nullable: false),
-                    Assigned = table.Column<bool>(type: "boolean", nullable: false),
-                    CustomerID = table.Column<int>(type: "integer", nullable: false),
-                    ExternalEmployeeId = table.Column<int>(type: "integer", nullable: true),
-                    Payment = table.Column<int>(type: "integer", nullable: false),
-                    TravelAgentId = table.Column<int>(type: "integer", nullable: true),
-                    Payments = table.Column<int[]>(type: "integer[]", nullable: true)
+                    From = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    To = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    Userid = table.Column<int>(type: "int", nullable: true),
+                    BookingType = table.Column<int>(type: "int", nullable: false),
+                    Traveltime = table.Column<TimeOnly>(type: "time", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Pax = table.Column<int>(type: "int", nullable: false),
+                    Assigned = table.Column<bool>(type: "bit", nullable: false),
+                    CustomerID = table.Column<int>(type: "int", nullable: false),
+                    ExternalEmployeeId = table.Column<int>(type: "int", nullable: true),
+                    Payment = table.Column<int>(type: "int", nullable: false),
+                    TravelAgentId = table.Column<int>(type: "int", nullable: true),
+                    Payments = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,12 +187,12 @@ namespace TravelManagement.Migrations
                 name: "Documents",
                 columns: table => new
                 {
-                    DocumentID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    ExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    VehicleID = table.Column<int>(type: "integer", nullable: false)
+                    DocumentID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    VehicleID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,12 +209,12 @@ namespace TravelManagement.Migrations
                 name: "vehicleExpences",
                 columns: table => new
                 {
-                    VehicleExpenceId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ExpenseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    CategoryType = table.Column<int>(type: "integer", nullable: false),
-                    VehicleID = table.Column<int>(type: "integer", nullable: false)
+                    VehicleExpenceId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ExpenseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    CategoryType = table.Column<int>(type: "int", nullable: false),
+                    VehicleID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -232,14 +231,14 @@ namespace TravelManagement.Migrations
                 name: "vehicleMaintenanceShedules",
                 columns: table => new
                 {
-                    VechicleMaintenanceSheduleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ServieDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Nextduedate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    cost = table.Column<decimal>(type: "numeric(10,2)", precision: 10, scale: 2, nullable: false),
-                    maintenanceType = table.Column<int>(type: "integer", nullable: false),
-                    VehicleID = table.Column<int>(type: "integer", nullable: false)
+                    VechicleMaintenanceSheduleId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServieDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Nextduedate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    cost = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    maintenanceType = table.Column<int>(type: "int", nullable: false),
+                    VehicleID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -256,15 +255,15 @@ namespace TravelManagement.Migrations
                 name: "BookingPaymentAllocations",
                 columns: table => new
                 {
-                    PaymentAllocationId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    BookingId = table.Column<int>(type: "integer", nullable: false),
-                    PayerType = table.Column<int>(type: "integer", nullable: false),
-                    CustomerId = table.Column<int>(type: "integer", nullable: true),
-                    CustomersId = table.Column<int>(type: "integer", nullable: true),
-                    TravelAgentId = table.Column<int>(type: "integer", nullable: true),
-                    AllocatedAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    PaidAmount = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false)
+                    PaymentAllocationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    PayerType = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: true),
+                    CustomersId = table.Column<int>(type: "int", nullable: true),
+                    TravelAgentId = table.Column<int>(type: "int", nullable: true),
+                    AllocatedAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PaidAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -291,14 +290,14 @@ namespace TravelManagement.Migrations
                 name: "overtimeLogs",
                 columns: table => new
                 {
-                    OvertimeID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    hours = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsApproved = table.Column<bool>(type: "boolean", nullable: false),
-                    userId = table.Column<int>(type: "integer", nullable: false),
-                    BookingId = table.Column<int>(type: "integer", nullable: false)
+                    OvertimeID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    hours = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsApproved = table.Column<bool>(type: "bit", nullable: false),
+                    userId = table.Column<int>(type: "int", nullable: false),
+                    BookingId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -321,14 +320,14 @@ namespace TravelManagement.Migrations
                 name: "Payments",
                 columns: table => new
                 {
-                    PaymentId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AmountPaid = table.Column<decimal>(type: "numeric(18,2)", precision: 18, scale: 2, nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "text", nullable: true),
-                    BookingId = table.Column<int>(type: "integer", nullable: false),
-                    TravelAgentId = table.Column<int>(type: "integer", nullable: true),
-                    CustomerId = table.Column<int>(type: "integer", nullable: true)
+                    PaymentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AmountPaid = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    TravelAgentId = table.Column<int>(type: "int", nullable: true),
+                    CustomerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
