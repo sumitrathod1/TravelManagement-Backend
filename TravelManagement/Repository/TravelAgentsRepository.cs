@@ -14,8 +14,8 @@ namespace TravelManagement.Repository
         public TravelAgentsRepository(AppDbContext context)
         {
             _context = context;
-        }  
-        
+        }
+
         public async Task<List<TravelAgent>> GetAllAgentsAsync()
         {
             var agents = await _context.TravelAgents.ToListAsync();
@@ -48,7 +48,7 @@ namespace TravelManagement.Repository
                 {
                     AgentId = agent.AgentId,
                     Name = agent.Name,
-                    type=agent.type,
+                    type = agent.type,
                     BookingCount = bookingCount,
                     Earned = totalPaid,
                     Pending = Math.Max(0, totalAllocated - totalPaid),
@@ -68,8 +68,8 @@ namespace TravelManagement.Repository
             {
                 Name = addAgentDTO.Name,
                 ContactNumber = addAgentDTO.ContactNumber,
-                type=agentType,
-                Email=addAgentDTO.Email,
+                type = agentType,
+                Email = addAgentDTO.Email,
 
 
             };
@@ -125,7 +125,7 @@ namespace TravelManagement.Repository
                     allocationRecord.PaidAmount += toApply;
                 }
                 remaining -= toApply;
-                applied+= toApply;
+                applied += toApply;
             }
 
             await _context.SaveChangesAsync();
@@ -139,9 +139,24 @@ namespace TravelManagement.Repository
             .Include(b => b.TravelAgent)
             .Include(b => b.Vehicle)
             .Include(b => b.Customer)
-            .Where(b => b.TravelAgentId == agentId).OrderByDescending(b=>b.travelDate)
+            .Where(b => b.TravelAgentId == agentId).OrderByDescending(b => b.travelDate)
             .ToListAsync();
             return bookings;
+        }
+        public async Task<List<Booking>> GetAgentReportBookingsById(int agentId, DateOnly? fromDate, DateOnly? toDate)
+        {
+            var query = _context.Bookings
+                .Include(b => b.TravelAgent)
+                .Include(b => b.Vehicle)
+                .Include(b => b.Customer)
+                .Where(b => b.TravelAgentId == agentId);
+
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                query = query.Where(b => b.travelDate >= fromDate.Value && b.travelDate <= toDate.Value);
+            }
+
+            return await query.OrderByDescending(b => b.travelDate).ToListAsync();
         }
     }
 }

@@ -5,10 +5,11 @@ namespace TravelManagement.Repository
 {
     public interface ITravelAgentsRepository
     {
-        Task <List<TravelAgent>> GetAllAgentsAsync();
-        Task <TravelAgent> addAgent(addAgentDTO addAgentDTO);
+        Task<List<TravelAgent>> GetAllAgentsAsync();
+        Task<TravelAgent> addAgent(addAgentDTO addAgentDTO);
         Task<List<AgentDashboardDTO>> GetAllAgentsDashboardAsync();
         Task<decimal> ApplyAgentPayment(AddAgentPaymentDto addAgentPaymentDto);
         Task<List<Booking>> GetAgentBookingsById(int agentId);
+        Task<List<Booking>> GetAgentReportBookingsById(int agentId,DateOnly? from, DateOnly? to);
     }
 }

@@ -69,7 +69,6 @@ namespace TravelManagement.Controllers
         }
 
         [HttpPut("Cancel-Booking")]
-
         public async Task<IActionResult> cancelBooking([FromBody] CancelBookingDTO cancelBookingDTO)
         {
             if (cancelBookingDTO == null)

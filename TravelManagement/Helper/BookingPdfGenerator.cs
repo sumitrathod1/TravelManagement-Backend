@@ -8,7 +8,7 @@ namespace TravelManagement.Helper
 {
     public class BookingPdfGenerator
     {
-        public static byte[] Generate(List<Booking> bookings, string agentName)
+        public static byte[] Generate(List<Booking> bookings, string agentName, DateOnly? fromDate, DateOnly? toDate)
         {
             var totalAmount = bookings.Sum(b => b.Amount);
 
@@ -17,7 +17,11 @@ namespace TravelManagement.Helper
                 container.Page(page =>
                 {
                     page.Margin(30);
-                    page.Header().Text($"Booking Report for Agent: {agentName}")
+                    string dateRangeText = (fromDate.HasValue && toDate.HasValue)
+                    ? $"({fromDate:dd-MM-yyyy} to {toDate:dd-MM-yyyy})"
+                    : "(All Bookings)";
+
+                    page.Header().Text($"Booking Report for Agent: {agentName}\n{dateRangeText}")
                         .SemiBold().FontSize(18).FontColor(Colors.Blue.Medium).AlignCenter();
 
                     page.Content().Column(col =>
@@ -47,14 +51,6 @@ namespace TravelManagement.Helper
                                 }
                             });
 
-                            // ✅ Header row
-                            //string[] headers = { "NO", "Customer", "From", "To", "Type", "Date", "Vehicle", "Amount" };
-                            //foreach (var h in headers)
-                            //{
-                            //    table.Cell().Background(Colors.Grey.Lighten2).Border(1)
-                            //        .Padding(5).Text(h).SemiBold().FontSize(10).AlignCenter();
-                            //}
-
                             int rowIndex = 0;
                             int count = 1;
                             foreach (var b in bookings)
@@ -62,7 +58,7 @@ namespace TravelManagement.Helper
                                 var bg = rowIndex % 2 == 0 ? Colors.White : Colors.Grey.Lighten4;
                                 table.Cell().Background(bg).Border(1).Padding(5).Text(count++.ToString());
                                 table.Cell().Background(bg).Border(1).Padding(5).Text(b.Customer?.CustomerName ?? "N/A");
-                                table.Cell().Background(bg).Border(1).Padding(5).Text(b.From.ToString());
+                                table.Cell().Background(bg).Border(1).Padding(5).Text(b.From?.ToString());
                                 table.Cell().Background(bg).Border(1).Padding(5).Text(b.To);
                                 table.Cell().Background(bg).Border(1).Padding(5).Text(b.BookingType.ToString());
                                 table.Cell().Background(bg).Border(1).Padding(5).Text(b.travelDate.ToString("dd-MM-yyyy"));

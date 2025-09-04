@@ -79,17 +79,23 @@ namespace TravelManagement.Controllers
         }
 
         [HttpGet("ExportAgentBookingsPdf/{agentId}")]
-        public async Task<IActionResult> ExportAgentBookingsPdf(int agentId)
+        public async Task<IActionResult> ExportAgentBookingsPdf(int agentId,[FromQuery] DateTime? fromDate = null,[FromQuery] DateTime? toDate = null)
         {
-            var bookings = await _travelAgentsRepository.GetAgentBookingsById(agentId);
+            DateOnly? from = fromDate.HasValue ? DateOnly.FromDateTime(fromDate.Value) : null;
+            DateOnly? to = toDate.HasValue ? DateOnly.FromDateTime(toDate.Value) : null;
+
+            var bookings = await _travelAgentsRepository.GetAgentReportBookingsById(agentId, from, to);
 
             if (bookings == null || bookings.Count == 0)
                 return NotFound("No bookings found for this agent");
 
             var agentName = bookings.First().TravelAgent?.Name ?? "Unknown Agent";
-            var pdfBytes = BookingPdfGenerator.Generate(bookings, agentName);
+            var pdfBytes = BookingPdfGenerator.Generate(bookings, agentName, from, to);
 
-            string fileName = $"Agent_{agentId}_BookingsReport.pdf";
+            string fileName = from.HasValue && to.HasValue
+                ? $"Agent_{agentId}_BookingsReport_{from:ddMMyyyy}_{to:ddMMyyyy}.pdf"
+                : $"Agent_{agentId}_BookingsReport_All.pdf";
+
             return File(pdfBytes, "application/pdf", fileName);
         }
     }
