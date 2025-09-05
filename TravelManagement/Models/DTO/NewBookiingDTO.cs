@@ -19,7 +19,7 @@
         public string? ExternalEmployeeNumber { get; set; }
         public double Amount { get; set; }
         public string Payment { get; set; } = "Admin";
-        public string? TravelAgentName { get; set; }
+        public int? TravelAgentId { get; set; }
         public decimal? CustomerWillPay { get; set; }
         public decimal? OwnerWillPay { get; set; }
     }

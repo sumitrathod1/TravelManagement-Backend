@@ -79,10 +79,10 @@ namespace TravelManagement.Controllers
         }
 
         [HttpGet("ExportAgentBookingsPdf/{agentId}")]
-        public async Task<IActionResult> ExportAgentBookingsPdf(int agentId,[FromQuery] DateTime? fromDate = null,[FromQuery] DateTime? toDate = null)
+        public async Task<IActionResult> ExportAgentBookingsPdf(int agentId,[FromQuery] DateOnly? fromDate = null,[FromQuery] DateOnly? toDate = null)
         {
-            DateOnly? from = fromDate.HasValue ? DateOnly.FromDateTime(fromDate.Value) : null;
-            DateOnly? to = toDate.HasValue ? DateOnly.FromDateTime(toDate.Value) : null;
+            DateOnly? from = fromDate.HasValue ? fromDate.Value : null;
+            DateOnly? to = toDate.HasValue ? toDate.Value : null;
 
             var bookings = await _travelAgentsRepository.GetAgentReportBookingsById(agentId, from, to);
 

@@ -21,31 +21,7 @@ namespace TravelManagement.Repository
                 .Include(b => b.user)
                 .Include(b => b.Customer)
                 .Include(b => b.Vehicle)
-                .Select(b => new
-                {
-                    b.BookingId,
-                    b.travelDate,
-                    b.Traveltime,
-                    b.BookingType,
-                    b.From,
-                    b.To,
-                    b.Amount,
-                    b.Status,
-                    b.Pax,
-                    Customer = new
-                    {
-                        b.Customer.CustomerName,
-                        b.Customer.CustomerNumber
-                    },
-                    Vehicle = new
-                    {
-                        b.Vehicle.VehicleName
-                    },
-                    User = new
-                    {
-                        b.user.EmployeeName
-                    }
-                }).OrderByDescending(b => b.travelDate)
+                .OrderByDescending(b => b.travelDate)
                 .ToListAsync();
 
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -197,10 +173,10 @@ namespace TravelManagement.Repository
 
             // 3. Prepare TravelAgent (if provided)
             TravelAgent? agent = null;
-            if (newBookiingDTO.TravelAgentName != null)
+            if (newBookiingDTO.TravelAgentId != null)
             {
                 agent = await _appDbCotext.TravelAgents
-                    .FirstOrDefaultAsync(x => x.Name == newBookiingDTO.TravelAgentName);
+                    .FirstOrDefaultAsync(x => x.AgentId == newBookiingDTO.TravelAgentId);
             }
 
             // 4. Customer and Employee Lookup

@@ -23,6 +23,7 @@ namespace TravelManagement.AppDBContext
         public DbSet<TravelAgent> TravelAgents { get; set; }
         public DbSet<Payments> Payments { get; set; }
         public DbSet<BookingPaymentAllocation> BookingPaymentAllocations { get; set; }
+        public DbSet<EmailInquiry> EmailInquiries { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
